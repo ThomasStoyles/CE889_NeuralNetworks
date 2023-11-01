@@ -12,7 +12,7 @@ class NeuralNetwork:
         # Initialize weights and biases
         self.weights_xh = np.random.rand(self.input_size, self.hidden_size) # assign random weights from input to hidden layers
         self.bias_hidden = np.zeros((1, self.hidden_size)) # bias for hidden layer  
-        self.weights_hidden_output = np.random.rand(self.hidden_size, self.output_size) # assign random weights from hidden to output layers
+        self.weights_hy = np.random.rand(self.hidden_size, self.output_size) # assign random weights from hidden to output layers
         self.bias_output = np.zeros((1, self.output_size)) # output bias
 
     def sigmoid(self, x):
@@ -24,9 +24,9 @@ class NeuralNetwork:
     def forward(self, input_data):
         # Forward propagation
         self.input_data = input_data
-        self.hidden_layer_input = np.dot(input_data, self.weights_input_hidden) + self.bias_hidden
+        self.hidden_layer_input = np.dot(input_data, self.weights_xh) + self.bias_hidden
         self.hidden_layer_output = self.sigmoid(self.hidden_layer_input)
-        self.output_layer_input = np.dot(self.hidden_layer_output, self.weights_hidden_output) + self.bias_output
+        self.output_layer_input = np.dot(self.hidden_layer_output, self.weights_hy) + self.bias_output
         self.output = self.sigmoid(self.output_layer_input)
         return self.output
 
@@ -41,10 +41,10 @@ class NeuralNetwork:
         self.bias_output += np.sum(output_delta, axis=0, keepdims=True) * learning_rate
 
         # Hidden layer
-        hidden_layer_error = np.dot(output_delta, self.weights_hidden_output.T)
+        hidden_layer_error = np.dot(output_delta, self.weights_hy.T)
         hidden_layer_delta = hidden_layer_error * self.sigmoid_derivative(self.hidden_layer_output)
         input_data_transpose = self.input_data.T
-        self.weights_input_hidden += np.dot(input_data_transpose, hidden_layer_delta) * learning_rate
+        self.weights_xh += np.dot(input_data_transpose, hidden_layer_delta) * learning_rate
         self.bias_hidden += np.sum(hidden_layer_delta, axis=0, keepdims=True) * learning_rate
 
     def train(self, input_data, target, learning_rate, epochs):
